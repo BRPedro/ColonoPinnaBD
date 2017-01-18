@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load staticfiles %}
+	<link rel="stylesheet" href="{% static 'paginaP/css/posicion.css' %}" type = "text/css"/>
+    <meta charset="UTF-8">
+    <title>Cargado</title>
+</head>
+<body>
+    <h1>Seleccione la Imagen</h1>
+
+    <form action="/cargadoArchivo/" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Aceptar" class="myButton"/>
+</form>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{% extends "paginas/header.html" %}
+
+
+{% for num in tipo %}
+    {% if num == 11 %}
+        {% block imagenP %}
+        {% load staticfiles %}
+        <img src="{% static 'paginaP/img/null.jpg' %}" class="responsive-img" style='max-height:400px;' alt="planta">
+        {% endblock %}
+    {% endif %}
+
+{% endfor %}
+
+

@@ -1,0 +1,16 @@
+{% extends "paginas/home.html" %}
+
+{% block imagenC %}
+{% load staticfiles %}
+<img src="{% static 'paginaP/img/imagTempW.jpg' %}" alt="" class="responsive-img" style='max-height:400px;' alt="Plantas">
+{% endblock %}
+
+{% block imagenP %}
+{% load staticfiles %}
+<img src="{% static 'paginaP/img/imgContada.jpg' %}"alt="" class="responsive-img" style='max-height:400px;' alt="Plantas">
+{% endblock %}
+
+{% block resultado %}
+{% load staticfiles %}
+<h3>Resultado: {{res}} Tiempo:{{tie}} </h3>
+{% endblock %}

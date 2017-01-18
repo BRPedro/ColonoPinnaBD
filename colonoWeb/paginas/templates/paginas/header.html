@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calcualdora</title>
+    {% load staticfiles %}
+	<link rel="stylesheet" href="{% static 'paginaP/css/bootstrap.min.css' %}" type = "text/css"/>
+	<link rel="stylesheet" href="{% static 'paginaP/css/menus.css' %}" type = "text/css"/>
+	<link rel="stylesheet" href="{% static 'paginaP/css/posicion.css' %}" type = "text/css"/>
+	<meta name="viewport" content = "width=device-width, initial-scale=1.0">
+
+</head>
+<body>
+<div id="contenedor">
+  <div id="cabecera">
+      <div id="imagen">
+           <img src="{% static 'paginaP/img/colonoImg.png' %}" class="responsive-img" style='max-height:100px;' alt="face">
+      </div>
+      <div id="texto">
+           <h1>Calculadora</h1>
+        </div>
+  </div>
+
+  <div id="menu1">
+      <nav>
+        <div id="menu">
+            <div class="row">
+			<div class="well bs-sidebar" id="sidebar" style="background-color:#fff">
+			  <ul class="nav nav-pills nav-stacked">
+				<li><a href='/cargadoArchivo/'>Cargar</a></li>
+				<li><a href='/ajusteParametros/'>Ajustes</a></li>
+				<li><a href='/guardar/'>Guardar</a></li>
+			  </ul>
+			</div>
+    </div>
+        </div>
+    </nav>
+
+  </div>
+
+  <div id="contenido">
+      <div id="origen">
+          {% block imagenC %}
+          {% endblock %}
+      </div>
+      <div id="final">
+          {% block imagenP %}
+          {% endblock %}
+      </div>
+  </div>
+
+  <div id="pie">
+      {% block resultado %}
+      {% endblock %}
+ <a href='/prosesamiento/' class="myButton">Analizar</a>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,16 @@
+{% extends "paginas/header.html" %}
+
+{% block imagenC %}
+{% load staticfiles %}
+<img src="{% static 'paginaP/img/null.jpg' %}" class="responsive-img" style='max-height:400px;' alt="planta">
+{% endblock %}
+
+{% block imagenP %}
+{% load staticfiles %}
+<img src="{% static 'paginaP/img/null.jpg' %}" class="responsive-img" style='max-height:400px;' alt="planta">
+{% endblock %}
+
+{% block resultado %}
+{% load staticfiles %}
+<h3>Resultado:</h3>
+{% endblock %}

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajustes</title>
+</head>
+<body>
+    <h1>Ajustes de parametros</h1>
+    <form action="/ajusteParametros/" method="post" enctype="multipart/form-data">
+    <table>
+        {% csrf_token %}
+        {% for field in form %}
+        <tr><td> {{ field.label_tag }}</td><td> {{ field }}</td></tr>
+        {% endfor %}
+    </table>
+        <input type="Submit" value="Aceptar" name="b1"/>
+        <input type="Submit" value="Cancelar" name="b2"/>
+        <input type="Submit" value="Restaurar " name="b3"/>
+</form>
+</body>
+</html>
