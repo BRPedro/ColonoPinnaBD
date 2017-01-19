@@ -389,4 +389,4 @@ prue = ConteoGeo ( 'C:\\Users\\aariasr\\Pictures\\tif_redu\\cortesin.tif',
                    16216648/3 )
 print prue.xTamanno, prue.yTamanno
 
-print prue.contadorAgrupado ( 6, 50.0, "archivoshp", "prue" )
+print prue.contadorAgrupado ( 3, 45.0, "archivoshp", "prue" )
