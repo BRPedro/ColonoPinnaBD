@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load staticfiles %}
+	<link rel="stylesheet" href="{% static 'paginaP/css/posicion.css' %}" type = "text/css"/>
     <meta charset="UTF-8">
     <title>Ajustes</title>
 </head>
@@ -13,9 +15,9 @@
         <tr><td> {{ field.label_tag }}</td><td> {{ field }}</td></tr>
         {% endfor %}
     </table>
-        <input type="Submit" value="Aceptar" name="b1"/>
-        <input type="Submit" value="Cancelar" name="b2"/>
-        <input type="Submit" value="Restaurar " name="b3"/>
+        <input type="Submit" value="Aceptar" name="b1" class="myButton"/>
+        <input type="Submit" value="Cancelar" name="b2" class="myButton"/>
+        <input type="Submit" value="Restaurar " name="b3" class="myButton"/>
 </form>
 </body>
 </html>

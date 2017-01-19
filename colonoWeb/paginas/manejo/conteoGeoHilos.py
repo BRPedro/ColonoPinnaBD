@@ -26,23 +26,22 @@ class ConteoGeo:
     """
 
     def __init__(self, direccion, capacidad):
-        self.dir = direccion  # Direccion de la fisica de la imagen.
-        self.imagen = gdal.Open ( direccion )  # Se carga la imagen que se encuentra en la direccion dir.
+        self.dir = direccion  # Direccion de la fisica de la imagen. Tipo String.
+        self.imagen = gdal.Open ( direccion )  # Se carga la imagen que se encuentra en la direccion dir. Tipo "Imagen .Shp"
 
-        self.yTamanno = self.imagen.RasterYSize  # Dimensiones de la imagen.
-        self.xTamanno = self.imagen.RasterXSize  # Dimensiones de la imagen.
-        self.tamannoImagen = self.xTamanno * self.yTamanno  # Dimencion total de la imagen.
-        self.yActual = 0  # Posicion de la fila por la que se esta analizando la imagen.
-        self.xActual = 0  # Posicion de la columna por la que se esta analizando la imagen.
+        self.yTamanno = self.imagen.RasterYSize  # Dimensiones de la imagen. Tipo int.
+        self.xTamanno = self.imagen.RasterXSize  # Dimensiones de la imagen. Tipo int.
+        self.tamannoImagen = self.xTamanno * self.yTamanno  # Dimencion total de la imagen. Tipo int.
+        self.yActual = 0  # Posicion de la fila por la que se esta analizando la imagen. Tipo int.
+        self.xActual = 0  # Posicion de la columna por la que se esta analizando la imagen. Tipo int.
 
-        self.centroides = []  # Lista de coordenadas de los centros de los patrones.
-        self.contadorGeneral = 0  # Contador para verificar cantidad de pixel procesados por ciclos.
-        self.contadorTotal = 0  # Contador para verificar cantidad de pixel en total.
-        self.limitePixeles = capacidad  # Limite que puede soportar sin que de error de memoria.
+        self.contadorGeneral = 0  # Contador para verificar cantidad de pixel procesados por ciclos. Tipo int.
+        self.contadorTotal = 0  # Contador para verificar cantidad de pixel en total. Tipo int.
+        self.limitePixeles = capacidad  # Limite que puede soportar sin que de error de memoria. Tipo int.
 
-        self.listapuntos = []
+        self.listapuntos = []  # Lista en la que se guarda la posición de los pixeles con intensidad de verde mayor a la del rojo y azul. Formato: [[x, y, cantidad], [x, y, cantidad],..]
 
-        self.fin = True
+        self.fin = True # Bandera encargada de cortar la ejecución de los ciclos de procesamiento de la imagen Tipo Boolean.
 
     # ****************************************************************************************************************************************************************************
 
@@ -106,7 +105,7 @@ class ConteoGeo:
     """
 
     def distaciaEntrePuntos(self, coordenada1, coordenada2):
-        return abs ( (((coordenada2[0] - coordenada1[0]) ** 2) + ((coordenada2[1] - coordenada1[01]) ** 2)) ** 0.5 )
+        return abs ( (((coordenada2[0] - coordenada1[0]) ** 2) + ((coordenada2[1] - coordenada1[01]) ** 2)) ** 0.5 ) #  |√((x2-x1 )^2+(y2-y1 )^2 )|
 
     # ****************************************************************************************************************************************************************************
 
@@ -122,37 +121,9 @@ class ConteoGeo:
 
     def agrupamientoXvecinos(self, listapuntos):
         while True:
-            inicio, siguiente = 0, 1
-            bandera = True
-            while siguiente < len ( listapuntos ):
-                bandera2 = True
-                for lis in listapuntos[inicio]:
-                    if self.busqueda ( lis[0], lis[1], listapuntos[siguiente] ):
-                        bandera2 = False
-                        bandera = False
-                        listapuntos[inicio] = listapuntos[inicio] + listapuntos[siguiente]
-                        listapuntos.pop ( siguiente )
-                        break
-                if bandera2:
-                    inicio += 1
-                    siguiente += 1
-            if bandera:
-                break
-        return listapuntos
-
-    # ****************************************************************************************************************************************************************************
-
-    """
-    Método encargado de agrupar los pixeles verdes de una imagen en listas de patrones.
-    Parametros:
-        listapuntos: [[],[],..] lista con listas de las coordenadas de un pixel verde
-        estado: int para controlar los hilos
-    """
-
-    def agrupamientoXvecinosFinal(self, listapuntos):
-        while True:
-            inicio, siguiente = 0, 1
-            bandera = True
+            inicio = 0 # Para llevar la posición del elemento a analizar en la lista. Tipo int
+            siguiente = 1 # Para llevar la posición del elemento+1 a analizar en la lista esto con el proposito de analizar los elementos siguientes a inicial. Tipo int
+            bandera = True # Bandera para salir del ciclo principal. Tipo boolean.
             while siguiente < len ( listapuntos ):
                 bandera2 = True
                 for lis in listapuntos[inicio]:
@@ -199,21 +170,6 @@ class ConteoGeo:
     # ****************************************************************************************************************************************************************************
 
     """
-    Método que inicia el conteo sobre la imagen.
-    Parámetros:
-        limitePatron: int valor mínimo que se acepta en cantidad de pixeles de un patrón.
-        limiteCercania: float valor mínimo que se acepta de cercanía entre los parones.
-        circulo: int tamaño de las marcas circulares.
-    Retorno:
-        [(int resultado conteo),(float tiempo de análisis)]
-    """
-
-    def inicioConteo(self, limitePatron, limiteCercania):
-        return self.contadorAgrupado ( limitePatron, limiteCercania )
-
-    # ****************************************************************************************************************************************************************************
-
-    """
     Método que inicia el conteo sobre la imagen el cual se realiza ejecutando varios hilos.
     Parámetros:
         limitePatron: int valor mínimo que se acepta en cantidad de pixeles de un patrón.
@@ -223,7 +179,7 @@ class ConteoGeo:
         [(int resultado conteo),(float tiempo de análisis)]
     """
 
-    def contadorAgrupado(self, limitePatron, limiteCercania, nombreShp):
+    def contadorAgrupado(self, limitePatron, limiteCercania, direccionShp, nombreShp):
         baseD = bd.BDConexion ( 'BDAPTECH2', 'colono14', '1234' )
         baseD.reinicioBDs ( )
         baseD.desconectar ( )
@@ -239,7 +195,6 @@ class ConteoGeo:
             print "\n\t\t", "*" * 30
             x, y = self.coordenadasFinales ( self.limitePixeles )
             self.listapuntos = []
-            self.centroides = []
             print "\t\t" + "Inicio Ciclo: " + str ( ciclos ), "Tiempo: " + tiem.hora ( )
             print "\t\t\tPaso 1 de 6 Filtro de verde"
             self.listapuntos = self.filtroVerde ( x, y )
@@ -265,7 +220,7 @@ class ConteoGeo:
             print "\t\t\t" + str ( len ( self.listapuntos ) )
             self.listapuntos = ref.CoordenadasGeo ( self.dir ).conversion_Pixel_Coordenadas ( self.listapuntos )
             pinnas += len ( self.listapuntos )
-            cshp.CrearShapefile ( "ciclo" + str ( ciclos ) + "_" + nombreShp, "archivoshp" ).crearmultipuntos (
+            cshp.CrearShapefile ( "ciclo" + str ( ciclos ) + "_" + nombreShp, direccionShp ).crearmultipuntos (
                 self.listapuntos )
 
             print "\t\t\tFIN...", "Tiempo: " + tiem.hora ( )
@@ -279,7 +234,7 @@ class ConteoGeo:
 
             self.xActual, self.yActual = x, y
             ciclos += 1
-        print "InicioBC : " + tiem.hora ()
+        print "InicioBC : " + tiem.hora ( )
         baseD = bd.BDConexion ( 'BDAPTECH2', 'colono14', '1234' )
         baseD.filtrarPatrones ( limiteCercania )
         baseD.desconectar ( )
@@ -293,13 +248,13 @@ class ConteoGeo:
         baseD.desconectar ( )
 
         self.listapuntos = ref.CoordenadasGeo ( self.dir ).conversion_Pixel_Coordenadas ( self.listapuntos )
-        cshp.CrearShapefile ( "Total", "archivoshp" ).crearmultipuntos ( self.listapuntos )
+        cshp.CrearShapefile ( "Total_" + nombreShp, direccionShp ).crearmultipuntos ( self.listapuntos )
         total = len ( self.listapuntos )
 
         baseD = bd.BDConexion ( 'BDAPTECH2', 'colono14', '1234' )
         baseD.reinicioBDs ( )
         baseD.desconectar ( )
-        print "FinBC: " + tiem.hora ()
+        print "FinBC: " + tiem.hora ( )
 
         tiempo_final = time ( )
 
@@ -355,25 +310,28 @@ class ConteoGeo:
     def filtroVerde(self, x, y):
         self.contadorGeneral = 0  # Inicializa el contadorGeneral en 0 para no sobrepasar el limite de memoria.
         listapuntos = []  # Inicializa la listapuntos vacía para cargarla con las coordenadas que correspondas a pixeles verdes los elementos insertados en ella tendran la estructura [coordenada x, coordenada y]
-        bandera = False # Bandera para salir de los ciclos internos.
+        bandera = False  # Bandera para salir de los ciclos internos.
         while self.yActual < self.yTamanno:  # Ciclo para recorrer las coordenadas y de la imagin no se debe reiniciar.
             while self.xActual < self.xTamanno:  # Ciclo para recorrer las coordenadas x de la imagen, se debe reiniciar al llegar al limite de largo de las coordenadas x de la imagen en caso de llegar al limite de memoria se debe quedar en la posición en la que va.
-                rojo, verde, azul, infrarrojo = self.getPixelPosicion ( self.xActual, self.yActual )  # obtiene los valores del pixel por el cual se encuentra la posición del ciclo.
-                if (rojo < verde) and (azul < verde):  # Evalua que el pixel corresponda a una intensidad de verde predominante en las bandas.
-                    listapuntos.append ( [[self.yActual, self.xActual]] )  # Inserta la coordenada el pixel que cumplio la condicion en la estructura [x,y].
+                rojo, verde, azul, infrarrojo = self.getPixelPosicion ( self.xActual,
+                                                                        self.yActual )  # obtiene los valores del pixel por el cual se encuentra la posición del ciclo.
+                if (rojo < verde) and (
+                    azul < verde):  # Evalua que el pixel corresponda a una intensidad de verde predominante en las bandas.
+                    listapuntos.append ( [[self.yActual,
+                                           self.xActual]] )  # Inserta la coordenada el pixel que cumplio la condicion en la estructura [x,y].
                 self.xActual += 1  # Aumenta la posicion de x.
-                if self.xActual >= x + 1 and self.yActual >= y + 1: # Verifica que no esté en la posición de la coordenada final permitida para el ciclo.
-                    if self.xActual >= self.xTamanno and self.yActual >= self.yTamanno: # Verifica que el ciclo este en el final de la imagen.
-                        self.fin = False # Si está en el final cambia la bandera global a False para terminar el ciclo principal de análisis.
-                    bandera = True # Si está en el límite permitido por el ciclo actual cambia la bandera local por True.
-                    break # Se sale del ciclo actual.
+                if self.xActual >= x + 1 and self.yActual >= y + 1:  # Verifica que no esté en la posición de la coordenada final permitida para el ciclo.
+                    if self.xActual >= self.xTamanno and self.yActual >= self.yTamanno:  # Verifica que el ciclo este en el final de la imagen.
+                        self.fin = False  # Si está en el final cambia la bandera global a False para terminar el ciclo principal de análisis.
+                    bandera = True  # Si está en el límite permitido por el ciclo actual cambia la bandera local por True.
+                    break  # Se sale del ciclo actual.
             if bandera:
                 break
-            self.yActual += 1 # Aumenta en 1 la posición actual de y.
+            self.yActual += 1  # Aumenta en 1 la posición actual de y.
             if self.xActual >= self.xTamanno and self.yActual >= self.yTamanno:  # Verifica que el ciclo este en el final de la imagen.
-                self.fin = False # Si está en el final cambia la bandera global a False para terminar el ciclo principal de análisis.
-            self.xActual = 0 # # Reinicia la posición del x actual en 0.
-        return listapuntos # Retorna la lista con las coordenadas de los pixeles con intensidad de verde mayor a las otras bandas.
+                self.fin = False  # Si está en el final cambia la bandera global a False para terminar el ciclo principal de análisis.
+            self.xActual = 0  # # Reinicia la posición del x actual en 0.
+        return listapuntos  # Retorna la lista con las coordenadas de los pixeles con intensidad de verde mayor a las otras bandas.
 
     # ****************************************************************************************************************************************************************************
 
@@ -411,23 +369,24 @@ class ConteoGeo:
     def coordenadasFinales(self, distancia):
         x = self.xActual  # Posición actual de x para el recorrido en la imagen.
         y = self.yActual  # Posición actual de x para el recorrido en la imagen.
-        contador = 0 # Contador con para verificar cuanto a que avanzar en las coordenadas.
-        if distancia == 0: # Verifica que la distancio no esté en 0.
-            return x, y # En caso de estar en 0 retorna en punto máximo (coordenadas finales de la imagen) de la imagen.
-        while y < self.yTamanno: # Para avanzar en el eje y de la imagen sin sobrepasar el final.
-            while x < self.xTamanno: # Para avanzar en el eje y de la imagen sin sobrepasar el final.
-                if contador >= distancia: # Verifica que el contador sea mayor o igual a la distancia.
-                    return x, y # En caso de ser el contador sea mayor o igual a la distancia retorna la posición por la que los ciclos estén.
-                contador += 1 # Aumenta el contador más 1
-                x += 1 # Aumenta x más 1
-            x = 0 # Reinicia x en 0.
-            y += 1 # Aumenta y más 1
-        return self.xTamanno - 1, self.yTamanno - 1 # En caso de llegar al final de la imagen se retorna la coordenada del ultimo pixel.
+        contador = 0  # Contador con para verificar cuanto a que avanzar en las coordenadas.
+        if distancia == 0:  # Verifica que la distancio no esté en 0.
+            return x, y  # En caso de estar en 0 retorna en punto máximo (coordenadas finales de la imagen) de la imagen.
+        while y < self.yTamanno:  # Para avanzar en el eje y de la imagen sin sobrepasar el final.
+            while x < self.xTamanno:  # Para avanzar en el eje y de la imagen sin sobrepasar el final.
+                if contador >= distancia:  # Verifica que el contador sea mayor o igual a la distancia.
+                    return x, y  # En caso de ser el contador sea mayor o igual a la distancia retorna la posición por la que los ciclos estén.
+                contador += 1  # Aumenta el contador más 1
+                x += 1  # Aumenta x más 1
+            x = 0  # Reinicia x en 0.
+            y += 1  # Aumenta y más 1
+        return self.xTamanno - 1, self.yTamanno - 1  # En caso de llegar al final de la imagen se retorna la coordenada del ultimo pixel.
 
 
 # ______________________________________________________________________________________________________________________________________________________________________________
 
-prue = ConteoGeo ( 'C:\\Users\\aariasr\\Pictures\\tif_redu\\exom- seccion 2 completa_transparent_mosaic_group1.tif', 50000000 )
+prue = ConteoGeo ( 'C:\\Users\\aariasr\\Pictures\\tif_redu\\cortesin.tif',
+                   16216648/3 )
 print prue.xTamanno, prue.yTamanno
 
-print prue.contadorAgrupado ( 6, 55.5, "prue" )
+print prue.contadorAgrupado ( 6, 50.0, "archivoshp", "prue" )

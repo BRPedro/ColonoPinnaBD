@@ -6,20 +6,18 @@ Clase reporte estructura de datos generales de la imagen.
 
 
 class Reporte:
-    def __init__(self, altura, escala, ruido, proximidad, circulo, conteo):
-        self.altura = altura
+    def __init__(self, escala,ruido,proximidad,capacidad, conteo):
         self.escala = escala
         self.ruido = ruido
         self.proximidad = proximidad
-        self.circulo = circulo
+        self.capacidad = capacidad
         self.conteo = conteo
 
-    def insertar(self, altura, escala, ruido, proximidad, circulo, conteo):
-        self.altura = altura
+    def insertar(self, escala,ruido,proximidad,capacidad, conteo):
         self.escala = escala
         self.ruido = ruido
         self.proximidad = proximidad
-        self.circulo = circulo
+        self.capacidad = capacidad
         self.conteo = conteo
 
 
@@ -34,9 +32,9 @@ def cargarReporte():
     try:
         fichero = file ( "paginas/static/paginaP/img/reporte.txt" )
         r = pickle.load ( fichero )
-        obj = Reporte ( r.altura, r.escala, r.ruido, r.proximidad, r.circulo, r.conteo )
+        obj = Reporte ( r.escala, r.ruido, r.proximidad, r.capacidad, r.conteo )
         return obj
     except:
-        n = Reporte ( 0, 0, 0, 0, 0, 0 )
+        n = Reporte ( 0, 0, 0, 0, 0 )
         guardarReporte ( n )
         return n

@@ -14,8 +14,8 @@
   width: 10%
 }
 #contenido {
-  float: left;
-  width: 90%
+  float: right;
+  width: 80%
 }
 #contenido #origen{
     float:left;

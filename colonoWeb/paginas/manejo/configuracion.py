@@ -1,31 +1,26 @@
 import pickle
 class Configuracion:
-    def __init__(self,altura,escala,ruido,proximidad,circulo):
-        self.altura=altura
+    def __init__(self,escala,ruido,proximidad,capacidad):
         self.escala=escala
         self.ruido=ruido
         self.proximidad=proximidad
-        self.circulo=circulo
-
-    def imp(self):
-        print self.ruido,self.proximidad,self.altura,self.altura,self.circulo,self.escala
-
+        self.capacidad=capacidad
 
 def cargar():
     try:
         fichero=file('paginas\static\paginaP\conf\configuracion.txt')
         r=pickle.load(fichero)
-        obj=Configuracion(r.altura,r.escala,r.ruido,r.proximidad,r.circulo)
+        obj=Configuracion(r.escala, r.ruido, r.proximidad,r.capacidad)
         return obj
     except:
-        guardar(15,0.5,2,20,10)
-        return Configuracion(15,0.5,2,20,10)
+        guardar(0.3,6,54.5,50000000)
+        return Configuracion(0.3,6,54.5,50000000)
 
-def guardar(altura,escala,ruido,proximidad,circulo):
+def guardar(escala,ruido,proximidad,capacidad):
     fichero=file('paginas\static\paginaP\conf\configuracion.txt','w')
-    nl=Configuracion(altura,escala,ruido,proximidad,circulo)
+    nl=Configuracion(escala,ruido,proximidad,capacidad)
     pickle.dump(nl,fichero)
     return nl
 
 def predeterminado():
-    return guardar(15,0.5,2,20,10)
+    return guardar(0.3,6,54.5,50000000)

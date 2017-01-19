@@ -430,7 +430,4 @@ class ConteoGeo:
 
 # ______________________________________________________________________________________________________________________________________________________________________________
 
-prue = ConteoGeo ( 'C:\\Users\\aariasr\\Pictures\\tif_redu\\exom- seccion 2 completa_transparent_mosaic_group1.tif', 50000000 )
-print prue.xTamanno, prue.yTamanno
 
-print prue.contadorAgrupado ( 6, 55.5, "prue" )

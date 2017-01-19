@@ -37,10 +37,8 @@ Lanza pagina con el formulario de cargado de imagen
 """
 def formularioImagen(request):
     if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
+        UploadFileForm(request.POST, request.FILES)
         copiaImagenServidor(request.FILES['archivo'])
-        #temI=cv2.imread('paginas\static\paginaP\img\imagTempW.tif')
-        #formatosI.cambio(temI,"imagTempW.jpg")
         return render(request,'paginas/imagCarga2.html')
     else:
         form = UploadFileForm()
