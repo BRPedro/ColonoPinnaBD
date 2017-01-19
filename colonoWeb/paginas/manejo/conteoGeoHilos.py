@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import os
 import threading
 from time import time
 
@@ -25,15 +26,17 @@ class ConteoGeo:
     Constructor recibe el URL de la imegen.
     """
 
-    def __init__(self, direccion, capacidad):
-        self.dir = direccion  # Direccion de la fisica de la imagen. Tipo String.
+    def __init__(self, direccion,direccionReducida, capacidad, alto, ancho):
+        self.dir = direccion  # Direccion fisica de la imagen. Tipo String.
         self.imagen = gdal.Open ( direccion )  # Se carga la imagen que se encuentra en la direccion dir. Tipo "Imagen .Shp"
-
         self.yTamanno = self.imagen.RasterYSize  # Dimensiones de la imagen. Tipo int.
         self.xTamanno = self.imagen.RasterXSize  # Dimensiones de la imagen. Tipo int.
         self.tamannoImagen = self.xTamanno * self.yTamanno  # Dimencion total de la imagen. Tipo int.
         self.yActual = 0  # Posicion de la fila por la que se esta analizando la imagen. Tipo int.
         self.xActual = 0  # Posicion de la columna por la que se esta analizando la imagen. Tipo int.
+
+        self.direccionReducida=direccionReducida # Direccion dfisica de la imagen reducida. Tipo String.
+        self.escalar_imagen(alto,ancho)
 
         self.contadorGeneral = 0  # Contador para verificar cantidad de pixel procesados por ciclos. Tipo int.
         self.contadorTotal = 0  # Contador para verificar cantidad de pixel en total. Tipo int.
@@ -382,11 +385,35 @@ class ConteoGeo:
             y += 1  # Aumenta y más 1
         return self.xTamanno - 1, self.yTamanno - 1  # En caso de llegar al final de la imagen se retorna la coordenada del ultimo pixel.
 
+    # ****************************************************************************************************************************************************************************
 
+    """
+    Método para calcular el ancho y alto escalado de una imagen para ajustarla a un elemento con ancho y alto definido para mostrar en interfaz.
+    Parámetro:
+        alto: el alto al que se quiere ajustar la imagen. Tipo: int
+        ancho: el ancho al que se quiere ajustar la imagen. Tipo: int
+    Retorna:
+        Alto y ancho ajustados.
+    """
+    def calculoDimencionImagenInterfaz(self,alto,ancho):
+        x=self.xTamanno # Tamaño inicial de la imagen en x. Este parámetro se actualiza con el nuevo tamaño escalado.
+        y=self.yTamanno # Tamaño inicial de la imagen en y. Este parámetro se actualiza con el nuevo tamaño escalado.
+        if x>alto:
+            porcen = (float(alto) * 100.0 / float(x)) / 100.0 #Calculo del porcentaje en el cual se tiene que disminuir la  x
+            x=int(x*porcen)
+            y=int(y*porcen)
+        if y>ancho:
+            porcen = (float(ancho) * 100.0 / float(y)) / 100.0 #Calculo del porcentaje en el cual se tiene que disminuir la  y
+            x=int(x*porcen)
+            y=int(y*porcen)
+        return x,y
+
+    def escalar_imagen(self,x,y):
+        x,y=self.calculoDimencionImagenInterfaz(x,y)
+        os.system ( "gdal_translate -of GTiff " + self.dir + " " + self.direccionReducida + " -outsize "+str(x)+" "+str(y) )
 # ______________________________________________________________________________________________________________________________________________________________________________
 
-prue = ConteoGeo ( 'C:\\Users\\aariasr\\Pictures\\tif_redu\\cortesin.tif',
-                   16216648/3 )
+prue = ConteoGeo ( 'C:\\Users\\aariasr\\Pictures\\tif_redu\\cortesin.tif','C:\\Users\\aariasr\\Pictures\\tif_redu\\cortesin2.tif', 16216648/3, 400,400 )
 print prue.xTamanno, prue.yTamanno
 
-print prue.contadorAgrupado ( 3, 45.0, "archivoshp", "prue" )
+print prue.contadorAgrupado ( 3, 40.0, "archivoshp", "prue" )
